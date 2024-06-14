@@ -1,0 +1,211 @@
+openapi: 3.0.1
+info:
+  title: Django Backend API
+  description: API for Django Backend Authentication, Subscription Management, and Transactions
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid credentials
+
+  /auth/register:
+    post:
+      summary: User registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '201':
+          description: Successful registration
+        '400':
+          description: Invalid data
+
+  /auth/refresh-token:
+    post:
+      summary: Refresh JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid refresh token
+
+  /auth/logout:
+    post:
+      summary: User logout
+      responses:
+        '200':
+          description: Successful logout
+        '400':
+          description: Invalid request
+
+  /auth/user:
+    get:
+      summary: Retrieve user information
+      responses:
+        '200':
+          description: Successful retrieval of user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  email:
+                    type: string
+        '401':
+          description: Unauthorized
+
+  /auth/subscriptions:
+    get:
+      summary: Retrieve user subscriptions
+      responses:
+        '200':
+          description: Successful retrieval of user subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    status:
+                      type: string
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create a new subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+      responses:
+        '201':
+          description: Subscription created successfully
+        '400':
+          description: Invalid data
+
+  /transaction/pay:
+    post:
+      summary: Process a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                method:
+                  type: string
+              required:
+                - amount
+                - method
+      responses:
+        '200':
+          description: Payment processed successfully
+        '400':
+          description: Invalid payment data
+
+  /transaction/list:
+    get:
+      summary: List all transactions
+      responses:
+        '200':
+          description: Successful retrieval of transaction list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    amount:
+                      type: number
+                      format: float
+                    method:
+                      type: string
+                    date:
+                      type: string
+                      format: date-time
+        '401':
+          description: Unauthorized
